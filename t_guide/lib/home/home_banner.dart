@@ -938,20 +938,17 @@ class Home extends StatelessWidget {
               color: const Color(0xFFF7F6F4),
               borderRadius: BorderRadius.circular(10),
             ),
+            child:TextField(
+               
+  decoration: InputDecoration(
+    border: OutlineInputBorder(),
+    hintText: 'Enter a search term',
+   
+  ),
+),
           ),
         ),
-        Positioned(
-          left: 41,
-          top: 414,
-          child: Text(
-            'Search',
-            style: GoogleFonts.getFont(
-              'Poppins',
-              color: const Color(0xFF36314F),
-              fontSize: 12,
-            ),
-          ),
-        ),
+      
         Positioned(
           left: 321,
           top: 416,
