@@ -42,9 +42,12 @@ dependencies:
   google_maps_flutter_web: ^0.5.4+3
   webview_flutter: ^4.7.0
   flutter_map: ^6.1.0
-  latlong2: ^0.9.1
-  flutter_map_cancellable_tile_provider: ^2.0.0
+  location: ^4.3.0
+  #latlong2: ^0.9.1
+  #flutter_map_cancellable_tile_provider: ^2.0.0
   geocoding: ^3.0.0
+  flutter_signin_button: ^2.0.0
+  supabase_flutter: ^2.0.0
  
 
 dev_dependencies:
