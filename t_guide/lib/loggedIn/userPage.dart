@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:t_guide/home/home_banner.dart';
+import '../home/LoginPage.dart' as Login;
 class UserData {
-  String name;
+  //String name;
   String email;
 
-  UserData({required this.name, required this.email});
+  UserData({required this.email});
 }
 
 class UserPage extends StatefulWidget {
+  final UserData userData;
+
+  const UserPage({Key? key, required this.userData}) : super(key: key);
+
   @override
   _UserPageState createState() => _UserPageState();
 }
@@ -15,7 +21,6 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   int _selectedIndex = 0;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  UserData _userData = UserData(name: 'John Doe', email: 'john.doe@example.com');
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Home Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
@@ -36,41 +41,67 @@ class _UserPageState extends State<UserPage> {
         title: Text('User Profile'),
       ),
       drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
+            UserAccountsDrawerHeader(
+              accountName: Text(widget.userData.email),
+              accountEmail: Text(widget.userData.email),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  widget.userData.email[0],
+                  style: TextStyle(fontSize: 40.0),
+                ),
               ),
-              child: Text('Drawer Header'),
             ),
             ListTile(
+              leading: Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                setState(() {
+                  _selectedIndex = 0;
+                });
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeApp()),
+                  );
               },
             ),
             ListTile(
+              leading: Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
-                // Update the state of the app
-                // ...
+                setState(() {
+                  _selectedIndex = 1;
+                });
                 Navigator.pop(context);
               },
             ),
             ListTile(
+              leading: Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                // Update the state of the app
-                // ...
+                setState(() {
+                  _selectedIndex = 2;
+                });
                 Navigator.pop(context);
+              },
+            ),
+
+             ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text('Sign Out'),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+                final supa_init = Login.supaInit();
+                Supabase.instance.client.auth.signOut();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeApp()),
+                  );
               },
             ),
           ],
@@ -79,27 +110,7 @@ class _UserPageState extends State<UserPage> {
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
+     
     );
   }
 }
-
-

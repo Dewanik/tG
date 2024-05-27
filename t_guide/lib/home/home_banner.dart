@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
+import 'package:t_guide/loggedIn/userPage.dart';
 import 'TGMaps.dart';
 import 'zipcode_finder.dart';
 import 'LoginPage.dart'; // Import the login page
 import 'package:geocoding/geocoding.dart' as geocoding; // Alias the geocoding package
+import 'package:supabase_flutter/supabase_flutter.dart';
+Future<void> supaInit() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
+  await Supabase.initialize(
+    url: 'https://vyyklhaaerlokvoslcar.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5eWtsaGFhZXJsb2t2b3NsY2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgwMjcwNjUsImV4cCI6MjAyMzYwMzA2NX0.p_81H973ZvrPBLVkTFJhWeim8RtovyP4ADSqExZEkkA',
+  );
+}
 class HomeApp extends StatelessWidget {
   const HomeApp({super.key});
 
@@ -307,12 +316,23 @@ Expanded(
               child: Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: Icon(Icons.login, color: Colors.white, size: 30),
+                  icon: Icon(Icons.account_circle_rounded, color: Colors.white, size: 30),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
+                    final supa_init = supaInit();
+                    if(Supabase.instance.client.auth.currentSession != null){
+                      Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UserPage(userData: UserData(
+                  //name: 'John Doe', // Replace with actual user data
+                  email: Supabase.instance.client.auth.currentUser?.email ?? 'unknown',
+                ))),
+                  );
+                    }else{
+              Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                    }
                   },
                 ),
               ),
