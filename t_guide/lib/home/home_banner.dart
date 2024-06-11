@@ -7,6 +7,8 @@ import 'zipcode_finder.dart';
 import 'LoginPage.dart'; // Import the login page
 import 'package:geocoding/geocoding.dart' as geocoding; // Alias the geocoding package
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:t_guide/loggedIn/Lsettings.dart';
 Future<void> supaInit() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -20,10 +22,9 @@ class HomeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     final darkModeProvider = Provider.of<DarkModeProvider>(context);
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
-      ),
+      theme: darkModeProvider.isDarkMode? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         resizeToAvoidBottomInset: false, // Prevent the resize when the keyboard is opened
         body: MyHome(),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:t_guide/home/home_banner.dart';
 import '../home/LoginPage.dart' as Login;
+import 'Lsettings.dart';
+
 class UserData {
   //String name;
   String email;
@@ -22,10 +24,11 @@ class _UserPageState extends State<UserPage> {
   int _selectedIndex = 0;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Profile Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Settings Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+   final List _pageOptions = [
+    HomeApp(),
+   SettingsApp()
+    
+    
   ];
 
   void _onItemTapped(int index) {
@@ -64,7 +67,7 @@ class _UserPageState extends State<UserPage> {
                 });
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeApp()),
+                      MaterialPageRoute(builder: (context) => HomeApp()),
                   );
               },
             ),
@@ -73,8 +76,9 @@ class _UserPageState extends State<UserPage> {
               title: const Text('Profile'),
               onTap: () {
                 setState(() {
-                  _selectedIndex = 1;
+                  _selectedIndex = 0;
                 });
+                
                 Navigator.pop(context);
               },
             ),
@@ -83,9 +87,12 @@ class _UserPageState extends State<UserPage> {
               title: const Text('Settings'),
               onTap: () {
                 setState(() {
-                  _selectedIndex = 2;
+                  _selectedIndex = 1;
                 });
-                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                   MaterialPageRoute(builder:(context) => _pageOptions.elementAt(_selectedIndex)),
+                  );
               },
             ),
 
@@ -96,19 +103,20 @@ class _UserPageState extends State<UserPage> {
                 setState(() {
                   _selectedIndex = 0;
                 });
-                final supa_init = Login.supaInit();
-                Supabase.instance.client.auth.signOut();
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeApp()),
+                    MaterialPageRoute(builder:(context) => _pageOptions.elementAt(_selectedIndex)),
                   );
+                final supa_init = Login.supaInit();
+                Supabase.instance.client.auth.signOut();
+                
               },
             ),
           ],
         ),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: Text("hello"),
       ),
      
     );

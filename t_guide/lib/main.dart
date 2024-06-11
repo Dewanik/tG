@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'home/home_banner.dart';
-
+import 'loggedIn/Lsettings.dart' ;
+import 'package:provider/provider.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(  
+    ChangeNotifierProvider(
+        create: (context) => DarkModeProvider(),
+       child:MyApp(),
+    ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  //const MyApp({super.key});
+  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+   
     return MaterialApp(
       title: 'The Tours',
-      
+      theme: ThemeData.dark(),
       home: const MyHomePage(),
     );
   }
@@ -45,6 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return HomeApp();
+    return const HomeApp();
   }
 }
