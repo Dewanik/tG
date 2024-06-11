@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:t_guide/loggedIn/userPage.dart';
 import 'TGMaps.dart';
@@ -40,7 +39,7 @@ class MyHome extends StatefulWidget {
 
 class MyHomeState extends State<MyHome> {
   final PageController _controller = PageController();
-  TextEditingController _controller2 = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController();
   String _output = '';
   final ZipcodeFinder _zipcodeFinder = ZipcodeFinder();
   final Location _location = Location();

@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:t_guide/home/home_banner.dart';
 import '../home/LoginPage.dart' as Login;
 import 'Lsettings.dart';
-
+import 'profile.dart';
 class UserData {
   //String name;
   String email;
@@ -26,7 +26,8 @@ class _UserPageState extends State<UserPage> {
 
    final List _pageOptions = [
     HomeApp(),
-   SettingsApp()
+   SettingsApp(),
+   ProfileApp(),
     
     
   ];
@@ -76,10 +77,13 @@ class _UserPageState extends State<UserPage> {
               title: const Text('Profile'),
               onTap: () {
                 setState(() {
-                  _selectedIndex = 0;
+                  _selectedIndex = 2;
                 });
                 
-                Navigator.pop(context);
+                 Navigator.push(
+                    context,
+                   MaterialPageRoute(builder:(context) => _pageOptions.elementAt(_selectedIndex)),
+                  );
               },
             ),
             ListTile(
