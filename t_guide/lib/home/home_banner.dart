@@ -8,6 +8,7 @@ import 'package:geocoding/geocoding.dart' as geocoding; // Alias the geocoding p
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:t_guide/loggedIn/Lsettings.dart';
+
 Future<void> supaInit() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -16,14 +17,15 @@ Future<void> supaInit() async {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5eWtsaGFhZXJsb2t2b3NsY2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgwMjcwNjUsImV4cCI6MjAyMzYwMzA2NX0.p_81H973ZvrPBLVkTFJhWeim8RtovyP4ADSqExZEkkA',
   );
 }
+
 class HomeApp extends StatelessWidget {
   const HomeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-     final darkModeProvider = Provider.of<DarkModeProvider>(context);
+    final darkModeProvider = Provider.of<DarkModeProvider>(context);
     return MaterialApp(
-      theme: darkModeProvider.isDarkMode? ThemeData.dark() : ThemeData.light(),
+      theme: darkModeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         resizeToAvoidBottomInset: false, // Prevent the resize when the keyboard is opened
         body: MyHome(),
@@ -43,7 +45,8 @@ class MyHomeState extends State<MyHome> {
   String _output = '';
   final ZipcodeFinder _zipcodeFinder = ZipcodeFinder();
   final Location _location = Location();
-   String _searchtrm = '';
+  String _searchtrm = '';
+
   @override
   void initState() {
     super.initState();
@@ -160,10 +163,9 @@ class MyHomeState extends State<MyHome> {
                 child: Stack(
                   children: [
                     Expanded(
-                      flex:4,
-                      child:TGMaps()
+                      flex: 4,
+                      child: TGMaps(),
                     ),
-                   
                     SingleChildScrollView(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -236,11 +238,12 @@ class MyHomeState extends State<MyHome> {
                           ),
                           SizedBox(height: 16),
                           Container(
-                          color:Color.fromARGB(100, 0, 0, 0),
-                          child:Text(
-                            _output,
-                            style: TextStyle(color: Colors.white),
-                          ),),
+                            color: Color.fromARGB(100, 0, 0, 0),
+                            child: Text(
+                              _output,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -248,65 +251,25 @@ class MyHomeState extends State<MyHome> {
                 ),
               ),
               // New section for trips/guides experiences
-Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'EXCLUSIVE LOCALITY TRAVEL EXPERIENCES IN $_searchtrm',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      Expanded(
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            // Skeleton for horizontal cards
-            Card(
-              child: Container(
-                width: 200, // Set a fixed width for the cards
-                child: ListTile(
-                  leading: Icon(Icons.map),
-                  title: Text('Trip/Guide Experience 1'),
-                  subtitle: Text('Description of the trip or guide experience.'),
+              SizedBox(height:20),
+      Text(
+'EXCLUSIVE LOCALITY TRAVEL EXPERIENCES IN $_searchtrm',
+style: TextStyle(
+fontSize: 18,
+fontWeight: FontWeight.bold,
+color: Colors.white,
+)),SizedBox(height:20),
+              Expanded(
+                child: PageView.builder(
+                  
+                  scrollDirection: Axis.vertical,
+                  itemCount: _experiences.length,
+                  itemBuilder: (context, index) {
+                    return _buildExperiencePage(_experiences[index]);
+                  },
                 ),
               ),
-            ),
-            Card(
-              child: Container(
-                width: 200, // Set a fixed width for the cards
-                child: ListTile(
-                  leading: Icon(Icons.map),
-                  title: Text('Trip/Guide Experience 2'),
-                  subtitle: Text('Description of the trip or guide experience.'),
-                ),
-              ),
-            ),
-            Card(
-              child: Container(
-                width: 200, // Set a fixed width for the cards
-                child: ListTile(
-                  leading: Icon(Icons.map),
-                  title: Text('Trip/Guide Experience 3'),
-                  subtitle: Text('Description of the trip or guide experience.'),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-)
-
-
+                      
             ],
           ),
           Positioned(
@@ -319,19 +282,23 @@ Expanded(
                   icon: Icon(Icons.account_circle_rounded, color: Colors.white, size: 30),
                   onPressed: () {
                     final supa_init = supaInit();
-                    if(Supabase.instance.client.auth.currentSession != null){
+                    if (Supabase.instance.client.auth.currentSession != null) {
                       Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => UserPage(userData: UserData(
-                  //name: 'John Doe', // Replace with actual user data
-                  email: Supabase.instance.client.auth.currentUser?.email ?? 'unknown',
-                ))),
-                  );
-                    }else{
-              Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserPage(
+                            userData: UserData(
+                              // name: 'John Doe', // Replace with actual user data
+                              email: Supabase.instance.client.auth.currentUser?.email ?? 'unknown',
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
                     }
                   },
                 ),
@@ -339,6 +306,70 @@ Expanded(
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  final List<Map<String, dynamic>> _experiences = [
+    {
+      'title': 'Trip/Guide Experience 1',
+      'description': 'Description of the trip or guide experience 1.',
+      'mediaUrls': [
+        'https://via.placeholder.com/200',
+        'https://via.placeholder.com/200',
+      ],
+    },
+    {
+      'title': 'Trip/Guide Experience 2',
+      'description': 'Description of the trip or guide experience 2.',
+      'mediaUrls': [
+        'https://via.placeholder.com/200',
+        'https://via.placeholder.com/200',
+      ],
+    },
+    {
+      'title': 'Trip/Guide Experience 3',
+      'description': 'Description of the trip or guide experience 3.',
+      'mediaUrls': [
+        'https://via.placeholder.com/200',
+        'https://via.placeholder.com/200',
+      ],
+    },
+  ];
+
+  Widget _buildExperiencePage(Map<String, dynamic> experience) {
+    return Card(
+      child: Container(
+        width: double.infinity, // Ensure the card takes full width
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: experience['mediaUrls'].length,
+                itemBuilder: (context, index) {
+                  return Image.network(
+                    experience['mediaUrls'][index],
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    
+                  );
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.map),
+              title: Text(
+                experience['title'],
+                overflow: TextOverflow.ellipsis, // Handle overflow of text
+              ),
+              subtitle: Text(
+                experience['description'],
+                overflow: TextOverflow.ellipsis, // Handle overflow of text
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
