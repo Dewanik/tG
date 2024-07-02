@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:t_guide/loggedIn/guide.dart';
 
 class BookedTrips extends StatelessWidget {
   final Map<String, dynamic> trip = {
@@ -76,6 +77,7 @@ class BookedTrips extends StatelessWidget {
                       Text(
                         trip['guide']['name'],
                         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                        
                       ),
                       SizedBox(height: 4.0),
                       Row(
@@ -95,6 +97,10 @@ class BookedTrips extends StatelessWidget {
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () {
                       // Navigate to guide details page (implement this later)
+                     Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => GuidePage()),
+                      );
                     },
                   ),
                 ],
