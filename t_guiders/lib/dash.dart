@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:t_guiders/tG.dart';
 import 'db.dart';
 import 'book.dart';
 import 'login.dart';
@@ -8,15 +11,22 @@ import 'manageT.dart';
 import 'pay.dart';
 import 'profile.dart';
 import 'trips_d.dart';
-
-class MyDashPage extends StatefulWidget {
-  const MyDashPage({Key? key}) : super(key: key);
+class MyDashPage extends StatelessWidget {
+  const MyDashPage({super.key});
 
   @override
-  State<MyDashPage> createState() => _MyDashPageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(home: MyDash());
+  }
+}
+class MyDash extends ConsumerStatefulWidget {
+
+  @override
+  _MyDashState createState() => _MyDashState();
 }
 
-class _MyDashPageState extends State<MyDashPage> {
+
+class _MyDashState extends ConsumerState<MyDash> {
   String dropValue = '';
   List<String> categories = [];
   List<String> experienceNames = [];
@@ -51,8 +61,11 @@ class _MyDashPageState extends State<MyDashPage> {
     var tripstemp = [];
     var data = await supabaseClient.getData("guide_trips", "user", user_id);
     for (var item in data) {
+      
       var each_d = item['trip_details'];
+    
       if (each_d is Map<String, dynamic>) {
+        each_d.addAll({'created_at':item['created_at']});
         Map<String, dynamic> tripDetails = each_d;
         if (tripDetails['name'] == value) {
           tripstemp.add(tripDetails);
@@ -148,6 +161,7 @@ class _MyDashPageState extends State<MyDashPage> {
               leading: const Icon(Icons.manage_accounts),
               title: const Text('Manage Trips'),
               onTap: () {
+                ref.watch(markerProvider.notifier).clearMarkers();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ManageTripsPage()),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:t_guiders/dash.dart';
 import 'package:t_guiders/login.dart';
 
-void main() {
-  runApp(const MyApp());
+void main(){
+  runApp( ProviderScope(child: MyApp(),));
 }
 
 class MyApp extends StatelessWidget {

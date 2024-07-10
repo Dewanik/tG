@@ -1,16 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:t_guiders/tG.dart';
 
-class ManageTripsPage extends StatefulWidget {
+
+class ManageTripsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: ManageTripsApp());
+  }
+}
+class ManageTripsApp extends ConsumerStatefulWidget {
   @override
   _ManageTripsPageState createState() => _ManageTripsPageState();
 }
 
-class _ManageTripsPageState extends State<ManageTripsPage> {
+class _ManageTripsPageState extends ConsumerState<ManageTripsApp> {
   final user_id = Supabase.instance.client.auth.currentUser?.id;
   final _formKey = GlobalKey<FormState>();
   final _tripNameController = TextEditingController();
@@ -18,13 +28,15 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
   final _packageIncludesController = TextEditingController();
   final _costPerPersonController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-
+  
   String? _selectedCategory;
   List<String> _categories = ['Adventure', 'Leisure', 'Business', 'Cultural'];
   List<XFile>? _imageFiles = [];
+  int _totalPeopleAllowed = 1;
 
   final supabaseClient = Supabase.instance.client;
-
+ 
+   
   Future<void> _addTrip() async {
     var user = supabaseClient.auth.currentUser;
 
@@ -43,9 +55,9 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
         try {
           print(fileName);
           final response = supabaseClient.storage.from("storage").upload(fileName, fileToUpload);
-          if (response == null) {
+          if (response != null) {
             final publicUrlResponse = supabaseClient.storage.from('storage').getPublicUrl(fileName);
-            
+           
             if (publicUrlResponse == null){
               imageBlobs.add({'path':"Error not found !"});
             }else{
@@ -58,19 +70,29 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
           print('Exception during file upload: $e');
         }
       }
-
+      // Get markers from markerProvider
+      final markers = ref.read(markerProvider);
+      final markerData = markers.map((marker) => {
+        'latitude': marker.point.latitude,
+        'longitude': marker.point.longitude,
+      }).toList();
       var tripDetails = {
         "name": _tripNameController.text,
         "description": _tripDescriptionController.text,
         "category": _selectedCategory,
         "includes": _packageIncludesController.text,
         "cost_per_person": int.parse(_costPerPersonController.text),
+        "total_people_allowed": _totalPeopleAllowed,
         "images": imageBlobs,
-        "user_id": user.id,  // Add user ID here
+        "user_id": user.id,  
+        "markers": markerData,
+        // Add user ID here
+  
       };
-
+      
       var dataToSend = {
         'trip_details': tripDetails,
+        
         'user': user_id
       };
 
@@ -115,12 +137,13 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
         }
       }
     } catch (e) {
-      print('Exception during authentication: $e');
+      print('Exception during authentication: $e;');
     }
     return null;
   }
 
   Future<void> _selectImages() async {
+    
     final List<XFile>? selectedImages = await _picker.pickMultiImage();
     if (selectedImages != null && selectedImages.isNotEmpty) {
       setState(() {
@@ -219,6 +242,28 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
                 },
               ),
               SizedBox(height: 20.0),
+              Text('Total People Allowed'),
+             
+              Slider(
+                value: _totalPeopleAllowed.toDouble(),
+                min: 1,
+                max: 100,
+                divisions: 99,
+                label: _totalPeopleAllowed.toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    _totalPeopleAllowed = value.toInt();
+                  });
+                },
+              ),
+             SizedBox(height:400,width:200, child:TGMaps()),
+             ElevatedButton(
+          onPressed: () {
+            ref.read(markerProvider.notifier).clearMarkers();
+          },
+          child: Text('Reset Markers'),
+        ),
+
               ElevatedButton(
                 onPressed: _selectImages,
                 child: Text('Select Trip Images'),
@@ -251,6 +296,7 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
                 child: Text('Add Trip'),
               ),
             ],
+             
           ),
         ),
       ),
@@ -265,4 +311,4 @@ class _ManageTripsPageState extends State<ManageTripsPage> {
     _costPerPersonController.dispose();
     super.dispose();
   }
-}
+} 

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as l2;
+import 'package:location/location.dart' as l1;
 import 'package:t_guide/loggedIn/userPage.dart';
 import 'TGMaps.dart';
 import 'zipcode_finder.dart';
 import 'LoginPage.dart'; // Import the login page
-import 'package:geocoding/geocoding.dart' as geocoding; // Alias the geocoding package
+import 'package:geocoding/geocoding.dart' as geocoding; // Alias the geocoding packa ge
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:t_guide/loggedIn/Lsettings.dart';
@@ -44,8 +45,11 @@ class MyHomeState extends State<MyHome> {
   final TextEditingController _controller2 = TextEditingController();
   String _output = '';
   final ZipcodeFinder _zipcodeFinder = ZipcodeFinder();
-  final Location _location = Location();
+  final l1.Location _location = l1.Location();
+  var latlong_current;
   String _searchtrm = '';
+
+
 
   @override
   void initState() {
@@ -55,8 +59,8 @@ class MyHomeState extends State<MyHome> {
 
   Future<void> _fetchCurrentLocation() async {
     bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
+    l1.PermissionStatus _permissionGranted;
+    l1.LocationData _locationData;
 
     _serviceEnabled = await _location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -67,18 +71,19 @@ class MyHomeState extends State<MyHome> {
     }
 
     _permissionGranted = await _location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == l1.PermissionStatus.denied) {
       _permissionGranted = await _location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != l1.PermissionStatus.granted) {
         return;
       }
     }
-
+  
     _locationData = await _location.getLocation();
     // TODO : use this setState to update search_term when search_term not available and using current location
     /*setState(() {
      _searchtrm = (geocoding.placemarkFromCoordinates(_locationData.latitude, _locationData.longitude)).;
     });*/
+   
     _fetchZipCodes(_locationData.latitude!, _locationData.longitude!);
   }
 
@@ -100,6 +105,10 @@ class MyHomeState extends State<MyHome> {
       setState(() {
         _output = output;
       });
+       setState(()  {
+     // ignore: await_only_futures
+     latlong_current =  l2.LatLng(lat,lon);
+  });
       print(output);
     } catch (e, stacktrace) {
       setState(() {
@@ -164,7 +173,7 @@ class MyHomeState extends State<MyHome> {
                   children: [
                     Expanded(
                       flex: 4,
-                      child: TGMaps(),
+                      child: TGMaps(initial_loc: latlong_current,),
                     ),
                     SingleChildScrollView(
                       padding: const EdgeInsets.all(16.0),
